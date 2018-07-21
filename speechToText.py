@@ -1,47 +1,100 @@
-
+#Ariel Mata Vega
+#LevelUp project 
 import speech_recognition as sr
+from google.cloud import texttospeech
+from playsound import playsound
 import os
 
 
-#escucha por el microfono y envia el audio al API de Google Speech to text 
-#retorna un diccionario que indica si hubo exito, el error que hubo en caso de que existiera y la trasncripicion del audio
-def audioATexto():
+#listens using the microphone and sends the audio to Google Speech to text 
+#it return a dictionary which indicates if everything worked fine, the errorCode code if 
+#something went wrong and finally the trasncription of the audio
+def speechRecognizer(recognizer, microphone):
     
-    r = sr.Recognizer()
-    respuesta = {
-        "exito": True,
-        "error": None,
-        "transcripcion": None
-    }
+    # parameter type checking
+    if not isinstance(recognizer, sr.Recognizer):
+        raise TypeError("`recognizer` must be `Recognizer` instance")
 
-    with sr.Microphone() as source:
-        r.dynamic_energy_threshold = True
-        r.pause_threshold = 2
-        r.adjust_for_ambient_noise(source, duration=1)
+    if not isinstance(microphone, sr.Microphone):
+        raise TypeError("`microphone` must be `Microphone` instance")
+    ###########
+
+    response = {
+        "success": True, # True if everything went ok
+        "errorCode": None, #error code for identification 
+        "transcription": None #text obtained from the transcription of the speech
+    }
+    #recording from system microphone
+    with microphone as source:
+        recognizer.dynamic_energy_threshold = True  #used for avoiding noise efects 
+        recognizer.pause_threshold = 3  #maximum amount of seconds between words 
+        recognizer.adjust_for_ambient_noise(source, duration=1) #used for avoiding noise efects
         try:
         	print('ya puede hablar...')
-        	audio = r.listen(source,timeout=10,phrase_time_limit=30)
-        except sr.WaitTimeoutError:
+        	audio = recognizer.listen(source,timeout=10,phrase_time_limit=30) #record of the audio obtained with the microphone
+        except sr.WaitTimeoutErrorCode: #defined period for start talking is over
         	print('se paso el tiempo y no hablo')
-        	respuesta["exito"] = False
-        	respuesta["error"] = "timeOut"
-        	    	
+        	response["success"] = False
+        	response["errorCode"] = "timeOut"
+    #########    	    	
+    #transcription audio to text
     try:
-        respuesta["transcripcion"] = r.recognize_google(audio).lower()
+    	#transcription of the audio using Google Cloud speech API
+        response["transcripcion"] = recognizer.recognize_google(audio).lower() #used for testing
         #command = r.recognize_google_cloud(audio,language='es-MX').lower()
-        print('usted ha dicho: ' + respuesta["transcripcion"] + '\n')
+        print('usted ha dicho: ' + response["transcripcion"] + '\n')
 
-    except sr.RequestError:
-        # API was unreachable or unresponsive
-        respuesta["exito"] = False
-        respuesta["error"] = "falloConexion"
-        print('fallo de conexion')    
-    #loop back to continue to listen for commands if unrecognizable speech is received
-    except sr.UnknownValueError:
+    except sr.RequestErrorCode: # API was unreachable or unresponsive
+        response["success"] = False
+        response["errorCode"] = "conectionFailed"
+        print('fallo de conexion')      
+    except sr.UnknownValueErrorCode: #unrecognizable speech is received
         print('No se entendio lo que dijo')
-        respuesta["exito"] = False
-        respuesta["error"] = "noEntendido"
+        response["success"] = False
+        response["errorCode"] = "notUnderstanded"
        
 
-    return respuesta
-print(audioATexto()["transcripcion"])
+    return response
+
+##############################################
+# Copyright 2018, Google, LLC.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.tr
+
+## THIS CODE WAS MODIFIED FROM HIS ORIGINAL VERSION BY ELECTRISING
+def playVoice(text): #takes a text variable as input parameter and plays it content as human-like speech 
+    client = texttospeech.TextToSpeechClient() #client of the Google text to speech API
+    input_text = texttospeech.types.SynthesisInput(text=text) #convertion of the input text variable
+
+    # Note: the voice can also be specified by name.
+    # Names of voices can be retrieved with client.list_voices().
+    voice = texttospeech.types.VoiceSelectionParams( #configuration of the used voice
+        language_code='es-ES',
+        ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
+
+    audio_config = texttospeech.types.AudioConfig(
+        audio_encoding=texttospeech.enums.AudioEncoding.MP3) #audio format configuration
+
+    response = client.synthesize_speech(input_text, voice, audio_config) #audio of the text content converted to speech
+
+    # the audio is stored in the output.mp3 file 
+    with open('/home/ariel/LevelUp/output.mp3', 'wb') as out:
+        out.write(response.audio_content)
+        print('archivo de audio creado')
+    playsound('/home/ariel/LevelUp/output.mp3') #plays output.mp3 file    
+######################
+
+if __name__ == "__main__":
+	r=sr.Recognizer();
+	m=sr.Microphone();
+	print(playVoice(speechRecognizer(r,m)["transcripcion"])) 
+
