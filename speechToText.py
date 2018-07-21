@@ -96,5 +96,5 @@ def playVoice(text): #takes a text variable as input parameter and plays it cont
 if __name__ == "__main__":
 	r=sr.Recognizer();
 	m=sr.Microphone();
-	print(playVoice(speechRecognizer(r,m)["transcripcion"])) 
+	playVoice(speechRecognizer(r,m)["transcripcion"])
 
