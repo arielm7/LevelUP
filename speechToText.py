@@ -20,22 +20,23 @@ def speechRecognizer(recognizer, microphone):
     ###########
 
     response = {
-        "success": True, # True if everything went ok
+        "success": False, # True if everything went ok
         "errorCode": None, #error code for identification 
         "transcription": None #text obtained from the transcription of the speech
     }
     #recording from system microphone
     with microphone as source:
         recognizer.dynamic_energy_threshold = True  #used for avoiding noise efects 
-        recognizer.pause_threshold = 3  #maximum amount of seconds between words 
+        recognizer.pause_threshold = 2  #maximum amount of seconds between words 
         recognizer.adjust_for_ambient_noise(source, duration=1) #used for avoiding noise efects
         try:
-        	print('ya puede hablar...')
-        	audio = recognizer.listen(source,timeout=10,phrase_time_limit=30) #record of the audio obtained with the microphone
-        except sr.WaitTimeoutErrorCode: #defined period for start talking is over
-        	print('se paso el tiempo y no hablo')
-        	response["success"] = False
-        	response["errorCode"] = "timeOut"
+            playsound('/home/ariel/LevelUp/startRecord.mp3')
+            print('ya puede hablar...')
+            audio = recognizer.listen(source,timeout=10,phrase_time_limit=30) #record of the audio obtained with the microphone
+        except sr.WaitTimeoutError: #defined period for start talking is over
+            print('se paso el tiempo y no hablo')
+            response["errorCode"] = "timeOut"
+            
     #########    	    	
     #transcription audio to text
     try:
@@ -43,15 +44,15 @@ def speechRecognizer(recognizer, microphone):
         response["transcripcion"] = recognizer.recognize_google(audio).lower() #used for testing
         #command = r.recognize_google_cloud(audio,language='es-MX').lower()
         print('usted ha dicho: ' + response["transcripcion"] + '\n')
-
-    except sr.RequestErrorCode: # API was unreachable or unresponsive
-        response["success"] = False
-        response["errorCode"] = "conectionFailed"
-        print('fallo de conexion')      
-    except sr.UnknownValueErrorCode: #unrecognizable speech is received
+        response["success"] = True
+    except sr.RequestError: # API was unreachable or unresponsive
+        response["errorCode"] = 'conexion fallida'
+        print('fallo de conexion')
+             
+    except sr.UnknownValueError: #unrecognizable speech is received
         print('No se entendio lo que dijo')
-        response["success"] = False
-        response["errorCode"] = "notUnderstanded"
+        response["errorCode"] = 'no se entendio lo que dijo'
+        
        
 
     return response
@@ -78,7 +79,7 @@ def playVoice(text): #takes a text variable as input parameter and plays it cont
     # Note: the voice can also be specified by name.
     # Names of voices can be retrieved with client.list_voices().
     voice = texttospeech.types.VoiceSelectionParams( #configuration of the used voice
-        language_code='es-ES',
+        language_code='en-US',
         ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
 
     audio_config = texttospeech.types.AudioConfig(
@@ -87,14 +88,11 @@ def playVoice(text): #takes a text variable as input parameter and plays it cont
     response = client.synthesize_speech(input_text, voice, audio_config) #audio of the text content converted to speech
 
     # the audio is stored in the output.mp3 file 
-    with open('/home/ariel/LevelUp/output.mp3', 'wb') as out:
+    with open('output.mp3', 'wb') as out:
         out.write(response.audio_content)
         print('archivo de audio creado')
     playsound('/home/ariel/LevelUp/output.mp3') #plays output.mp3 file    
 ######################
 
-if __name__ == "__main__":
-	r=sr.Recognizer();
-	m=sr.Microphone();
-	playVoice(speechRecognizer(r,m)["transcripcion"])
+    
 
