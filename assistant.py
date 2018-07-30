@@ -11,7 +11,8 @@ if __name__ == "__main__":
 	    response=speechToText.speechRecognizer(r,m)
 	    if response["success"]==True:
 	    	playsound('/home/ariel/LevelUp/success.mp3')
-	    	speechToText.playVoice('realizando orden')
+	    	print(response["transcription"])
+	    	speechToText.playVoice(response["transcription"])
 	    	##send trascription to server
 	    	##KNX
 	    	##
