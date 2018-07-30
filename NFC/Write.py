@@ -17,7 +17,7 @@ try:
 
         Nombre = raw_input("Digite el nombre del cliente:")
         Nivel = raw_input ("Digite el nivel de autorización:")
-        text = "%s %s" %(Nombre,Nivel)
+        text = "%s/%s" %(Nombre,Nivel)
         #usuario = "Nombre: %s / Autorización: %s" %(Nombre,Nivel)
         reader.write(text)
         print ("Escrito")
