@@ -6,7 +6,7 @@ $data = $_GET['request'];
 file_put_contents('GetParam.txt', $data);
 
 //Execute external python script
-$pythonScript= 'python3 /var/www/html/WatsonCommunication.py ' . ' ' . $data ; # replace with the script direction
+$pythonScript= 'python3 /var/www/html/python/WatsonCommunication.py ' . ' ' . $data ; # replace with the script direction
 echo shell_exec( $pythonScript);
 ?> 
 
