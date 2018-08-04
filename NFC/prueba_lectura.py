@@ -1,13 +1,8 @@
-def prueba():
+def lectura(usuario):
     print("Nivel de autorización va de 1-9, siendo 1 el más alto y 9 el más bajo")
     while True:
         try:
-                Nombre = input("Digite el nombre del cliente:")
-                Nivel = input ("Digite el nivel de autorización:")
-                usuario = "%s/%s" %(Nombre,Nivel)
                 print (usuario)
-        finally:
-                print("Se ha hecho la escritura")
                 nombre_usuario = usuario.split('/')
                 print (nombre_usuario[0])
                 print (nombre_usuario[1])
@@ -20,3 +15,5 @@ def prueba():
                 else:
                     print("Desbloquear funciones básicas del asistente, por nivel de autorización")
                     return False
+        finally:
+            print("Se ha terminado la lectura")
