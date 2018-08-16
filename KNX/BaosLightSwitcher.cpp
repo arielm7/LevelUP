@@ -1,3 +1,4 @@
+
 //
 // Copyright (c) 2002-2018 WEINZIERL ENGINEERING GmbH
 // All rights reserved.
@@ -28,17 +29,13 @@ CLASS_LOGGER("LightSwitcher")
 
 /*!
 	Light Switcher
-
 	This demo shows how to:
-
 		create a connection with the BAOS device
 		get/set Datapoint values
 		read parameters
-
 	It assumes an application with a single boolean bit (i.e. a light switch)
 	which it turns on and off. A parameter is also used to specify the wait period
 	before turning the light off.
-
 	You will have to change the IP Address or device name to match your device.
 	You can find the device name and ip address by running the Enumerator sample.
 */
@@ -58,13 +55,11 @@ struct BaosApp
 
 /*!
 	sets the datapoint value to 1 or 0
-
 	we read the value first to determine if it needs to be set.
 	This is not normally required and you can simply set the value
 	without reading it first. Implemented only to show how to
 	read the datapoint value
 */
-
 
 void waitTimeout(BaosConnector::Ptr connector)
 {
@@ -72,88 +67,15 @@ void waitTimeout(BaosConnector::Ptr connector)
 
 	poco_information(LOGGER(), format("Timeout is %d ms", timeout));
 
-	Thread::sleep(2000);
+	Thread::sleep(5000);
 
 }
 
 
-
-
-
-void SetiarHora(BaosConnector::Ptr connector, bool enabled)
+void obtenerConsumo(BaosConnector::Ptr connector)
 {
 
 	BaosDatapoint datapoint(connector, 2);
-
-	datapoint.setTimeLocal();
-	
-	printf ("\n");
-	printf ("se setio la hora con exito\n");
-	printf ("\n");	
-	
-}
-
-
-
-void PedirSegundo(BaosConnector::Ptr connector, bool enabled)
-{
-
-	BaosDatapoint datapoint(connector, 2);
-
-	int segundo = datapoint.getTimeSecond();
-	printf ("\n");
-	printf ("el segundo es %d", segundo);
-	printf ("\n");
-	
-}
-
-
-void PedirMinuto(BaosConnector::Ptr connector, bool enabled)
-{
-
-	BaosDatapoint datapoint(connector, 2);
-
-	int minuto = datapoint.getTimeMinute();
-	printf ("\n");
-	printf ("el minuto es %d", minuto);
-	printf ("\n");
-	
-}
-
-
-void PedirHora(BaosConnector::Ptr connector, bool enabled)
-{
-
-	BaosDatapoint datapoint(connector, 2);
-
-	int hora = datapoint.getTimeHour();
-	printf ("\n");
-	printf ("la hora es %d", hora);
-	printf ("\n");
-	
-}
-
-void PedirDia(BaosConnector::Ptr connector, bool enabled)
-{
-
-	BaosDatapoint datapoint(connector, 2);
-
-	int dia = datapoint.getTimeDay();
-
-	printf ("\n");
-	printf ("el dia es %d", dia);
-	printf ("\n");
-}
-
-
-
-
-
-
-void obtenerConsumo(BaosConnector::Ptr connector, bool enabled)
-{
-
-	BaosDatapoint datapoint(connector, 4);
 
 	int consumo = datapoint.get4OctetSigned();
 
@@ -163,183 +85,78 @@ void obtenerConsumo(BaosConnector::Ptr connector, bool enabled)
 	
 }
 
-
-
-void obtenerCoste(BaosConnector::Ptr connector, bool enabled)
+void obtenerPotencia(BaosConnector::Ptr connector)
 {
-	BaosDatapoint datapoint(connector, 5);
-	
-	float coste = datapoint.get2OctetFloat();
-	
-	printf ("\n");	
-	printf ("el coste es %f", coste);
+
+	BaosDatapoint datapoint(connector, 3);
+
+	float consumo = datapoint.get2OctetFloat();
+
 	printf ("\n");
-
-
+	printf ("la potencia es %f", consumo);
+	printf ("\n");
+	
 }
 
 
 
 
-
-
-
-/*
-
-
-
-
-
-
-
-
-
-
-void PrenderLuz(BaosConnector::Ptr connector, bool enabled)
+void PrenderLuz1(BaosConnector::Ptr connector)
 {
-	BaosDatapoint datapoint(connector, 8);
+	BaosDatapoint datapoint(connector, 1);
 	
 	datapoint.setBoolean(true);
 	
 	printf ("\n");	
 	printf ("luz encendida");
 	printf ("\n");
-
-
 }
-
-
-
-
-void ApagarLuz(BaosConnector::Ptr connector, bool enabled)
+void ApagarLuz1(BaosConnector::Ptr connector)
 {
-	BaosDatapoint datapoint(connector, 8);
+	BaosDatapoint datapoint(connector, 1);
 	
 	datapoint.setBoolean(false);
 	
 	printf ("\n");	
 	printf ("luz apagada");
 	printf ("\n");
-
 }
 
 
 
-void dimmmer_on(BaosConnector::Ptr connector, bool enabled)
+void PrenderLuz2(BaosConnector::Ptr connector)
 {
-	BaosDatapoint datapoint(connector, 6);
+	BaosDatapoint datapoint(connector, 4);
 	
 	datapoint.setBoolean(true);
 	
 	printf ("\n");	
-	printf ("dimmer on");
+	printf ("luz encendida");
 	printf ("\n");
-
 }
-
-
-void dimmmer_off(BaosConnector::Ptr connector, bool enabled)
+void ApagarLuz2(BaosConnector::Ptr connector)
 {
-	BaosDatapoint datapoint(connector, 6);
+	BaosDatapoint datapoint(connector, 4);
 	
 	datapoint.setBoolean(false);
 	
 	printf ("\n");	
-	printf ("dimmer off");
+	printf ("luz apagada");
 	printf ("\n");
-
 }
 
 
 
-void Brillo1(BaosConnector::Ptr connector, bool enabled)
+void Dimmer(BaosConnector::Ptr connector,int valor)
 {
-	BaosDatapoint datapoint(connector,7);
+	BaosDatapoint datapoint(connector,5);
 	
-	datapoint.setCharacterSet(20);
-	
-	printf ("\n");	
-	printf ("luz al 15");
+	datapoint.setCharacterSet(valor);	
 	printf ("\n");
-
+	printf ("dimmer al %d", valor);
+	printf ("\n");
 }
 
-
-
-void Brillo2(BaosConnector::Ptr connector, bool enabled)
-{
-	BaosDatapoint datapoint(connector,7);
-	
-	datapoint.setCharacterSet(100);	
-
-	printf ("\n");	
-	printf ("luz al 100");
-	printf ("\n");
-
-}
-
-
-
-void Brillo3(BaosConnector::Ptr connector, bool enabled)
-{
-	BaosDatapoint datapoint(connector,7);
-	
-	datapoint.setCharacterSet(200);
-	
-	printf ("\n");	
-	printf ("luz al 240");
-	printf ("\n");
-
-}
-
-
-
-void Brillo11(BaosConnector::Ptr connector, bool enabled)
-{
-	BaosDatapoint datapoint(connector,11);
-	
-	datapoint.set3BitControl(true,2);	
-
-	printf ("\n");	
-	printf ("brillo al 20%");
-	printf ("\n");
-
-}
-
-
-
-
-void Brillo22(BaosConnector::Ptr connector, bool enabled)
-{
-	BaosDatapoint datapoint(connector,11);
-	
-	datapoint.set3BitControl(true,4);	
-
-	printf ("\n");	
-	printf ("luz al 40%");
-	printf ("\n");
-
-}
-
-
-
-
-void Brillo33(BaosConnector::Ptr connector, bool enabled)
-{
-	BaosDatapoint datapoint(connector,11);
-	
-	datapoint.set3BitControl(true,6);	
-
-	printf ("\n");	
-	printf ("luz al 60%");
-	printf ("\n");
-
-}
-
-
-
-
-*/
 
 
 } // end anonymous namespace
@@ -363,53 +180,24 @@ int main(int argc, char* argv[])
 		BaosConnector::Ptr connector = connection.getConnector();
 	
 
-		SetiarHora(connector, true);
-		waitTimeout(connector);
-		PedirDia(connector, true);
-		PedirHora(connector, true);
-		PedirMinuto(connector, true);
-		PedirSegundo(connector, true);
-		obtenerConsumo(connector, true);
-		obtenerCoste(connector, true);
-
-
-
-		//Brillo1(connector, true);
-		//Brillo11(connector, true);
-/*		
-
-		//PrenderLuz(connector, true);
-		dimmmer_on(connector, true);
 		
-
+		obtenerConsumo(connector);
+		obtenerPotencia(connector);
+		PrenderLuz1(connector);
 		waitTimeout(connector);
-		Brillo1(connector, true);
-		//Brillo11(connector, true);
+		ApagarLuz1(connector);
 		waitTimeout(connector);
-		Brillo2(connector, true);
-		//Brillo22(connector, true);
-		waitTimeout(connector);		
-		Brillo3(connector, true);
-		//Brillo33(connector, true);
-
-
+		PrenderLuz2(connector);
 		waitTimeout(connector);
-
-
-		//ApagarLuz(connector, true);
-		dimmmer_off(connector, true);
-
-
-*/
-
-
-
-
-
-
-
-
-
+		Dimmer(connector,20);
+		waitTimeout(connector);
+		Dimmer(connector,100);
+		waitTimeout(connector);
+		Dimmer(connector,200);
+		waitTimeout(connector);
+		ApagarLuz2(connector);
+		obtenerConsumo(connector);
+		obtenerPotencia(connector);
 
 
 	}
@@ -420,4 +208,3 @@ int main(int argc, char* argv[])
 
 	return EXIT_SUCCESS;
 }
-
